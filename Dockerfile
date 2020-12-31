@@ -31,13 +31,13 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
            /etc/apt/sources.list.d/cuda.list \
            /etc/apt/sources.list.d/nvidia-ml.list && \
 
-    apt-get update && \
+    apt-get update
 
 # ==================================================================
 # tools
 # ------------------------------------------------------------------
 
-    DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
+RUN DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
         build-essential \
         apt-utils \
         ca-certificates \
@@ -53,13 +53,13 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
     $GIT_CLONE https://github.com/Kitware/CMake ~/cmake && \
     cd ~/cmake && \
     ./bootstrap && \
-    make -j"$(nproc)" install && \
+    make -j"$(nproc)" install
 
 # ==================================================================
 # darknet
 # ------------------------------------------------------------------
 
-    $GIT_CLONE https://github.com/pjreddie/darknet.git ~/darknet && \
+RUN $GIT_CLONE https://github.com/pjreddie/darknet.git ~/darknet && \
     cd ~/darknet && \
     sed -i 's/GPU=0/GPU=1/g' ~/darknet/Makefile && \
     sed -i 's/CUDNN=0/CUDNN=1/g' ~/darknet/Makefile && \
@@ -67,13 +67,13 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
     cp ~/darknet/include/* /usr/local/include && \
     cp ~/darknet/*.a /usr/local/lib && \
     cp ~/darknet/*.so /usr/local/lib && \
-    cp ~/darknet/darknet /usr/local/bin && \
+    cp ~/darknet/darknet /usr/local/bin
 
 # ==================================================================
 # python
 # ------------------------------------------------------------------
 
-    DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
+RUN DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
         software-properties-common \
         && \
     add-apt-repository ppa:deadsnakes/ppa && \
@@ -100,14 +100,13 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
         scikit-learn \
         matplotlib \
         Cython \
-        tqdm \
-        && \
+        tqdm
 
 # ==================================================================
 # torch
 # ------------------------------------------------------------------
 
-    DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
+RUN DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
         sudo \
         && \
 
@@ -115,52 +114,48 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
     cd ~/torch && \
     bash install-deps && \
     sed -i 's/${THIS_DIR}\/install/\/usr\/local/g' ./install.sh && \
-    ./install.sh && \
+    ./install.sh
 
 # ==================================================================
 # boost
 # ------------------------------------------------------------------
 
-    DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
-        libboost-all-dev \
-        && \
+RUN DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
+        libboost-all-dev
 
 # ==================================================================
 # chainer
 # ------------------------------------------------------------------
 
-    $PIP_INSTALL \
+RUN $PIP_INSTALL \
         cupy \
-        chainer \
-        && \
+        chainer
 
 # ==================================================================
 # jupyter
 # ------------------------------------------------------------------
 
-    $PIP_INSTALL \
-        jupyter \
-        && \
+RUN $PIP_INSTALL \
+        jupyter
 
 # ==================================================================
 # mxnet
 # ------------------------------------------------------------------
 
-    DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
+RUN DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
         libatlas-base-dev \
         graphviz \
         && \
 
     $PIP_INSTALL \
         mxnet-cu101 \
-        graphviz \
-        && \
+        graphviz
 
 # ==================================================================
 # onnx
 # ------------------------------------------------------------------
 
-    DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
+RUN DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
         protobuf-compiler \
         libprotoc-dev \
         && \
@@ -170,22 +165,20 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
         && \
 
     $PIP_INSTALL \
-        onnxruntime \
-        && \
+        onnxruntime
 
 # ==================================================================
 # paddle
 # ------------------------------------------------------------------
 
-    $PIP_INSTALL \
-        paddlepaddle-gpu \
-        && \
+RUN $PIP_INSTALL \
+        paddlepaddle-gpu
 
 # ==================================================================
 # pytorch
 # ------------------------------------------------------------------
 
-    $PIP_INSTALL \
+RUN $PIP_INSTALL \
         future \
         numpy \
         protobuf \
@@ -195,22 +188,20 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
         && \
     $PIP_INSTALL \
         --pre torch==1.7.0+cu101 torchvision==0.8.2+cu101 torchaudio==0.7.2 -f \
-        https://download.pytorch.org/whl/torch_stable.html \
-        && \
+        https://download.pytorch.org/whl/torch_stable.html
 
 # ==================================================================
 # tensorflow
 # ------------------------------------------------------------------
 
-    $PIP_INSTALL \
-        tensorflow-gpu \
-        && \
+RUN $PIP_INSTALL \
+        tensorflow-gpu
 
 # ==================================================================
 # theano
 # ------------------------------------------------------------------
 
-    DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
+RUN DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
         libblas-dev \
         && \
 
@@ -227,40 +218,36 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
     printf '[global]\nfloatX = float32\ndevice = cuda0\n\n[dnn]\ninclude_path = /usr/local/cuda/targets/x86_64-linux/include\n' > ~/.theanorc && \
 
     $PIP_INSTALL \
-        https://github.com/Theano/Theano/archive/master.zip \
-        && \
+        https://github.com/Theano/Theano/archive/master.zip
 
 # ==================================================================
 # jupyterlab
 # ------------------------------------------------------------------
 
-    $PIP_INSTALL \
-        jupyterlab \
-        && \
+RUN $PIP_INSTALL \
+        jupyterlab
 
 # ==================================================================
 # keras
 # ------------------------------------------------------------------
 
-    $PIP_INSTALL \
+RUN $PIP_INSTALL \
         h5py \
-        keras \
-        && \
+        keras
 
 # ==================================================================
 # lasagne
 # ------------------------------------------------------------------
 
-    $GIT_CLONE https://github.com/Lasagne/Lasagne ~/lasagne && \
+RUN $GIT_CLONE https://github.com/Lasagne/Lasagne ~/lasagne && \
     cd ~/lasagne && \
-    $PIP_INSTALL \
-        . && \
+    $PIP_INSTALL .
 
 # ==================================================================
 # opencv
 # ------------------------------------------------------------------
 
-    DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
+RUN DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
         libatlas-base-dev \
         libgflags-dev \
         libgoogle-glog-dev \
@@ -285,30 +272,28 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
           -D BUILD_EXAMPLES=OFF \
           .. && \
     make -j"$(nproc)" install && \
-    ln -s /usr/local/include/opencv4/opencv2 /usr/local/include/opencv2 && \
+    ln -s /usr/local/include/opencv4/opencv2 /usr/local/include/opencv2
 
 # ==================================================================
 # sonnet
 # ------------------------------------------------------------------
 
-    $PIP_INSTALL \
+RUN $PIP_INSTALL \
         tensorflow_probability \
-        "dm-sonnet>=2.0.0b0" --pre \
-        && \
+        "dm-sonnet>=2.0.0b0" --pre
 
 # ==================================================================
 # caffe
 # ------------------------------------------------------------------
 
-    apt-get update && \
+RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
-        caffe-cuda \
-        && \
+        caffe-cuda
 # ==================================================================
 # cntk
 # ------------------------------------------------------------------
 
-    DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
+RUN DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
         openmpi-bin \
         libpng-dev \
         libjpeg-dev \
@@ -331,14 +316,13 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
     make -j"$(nproc)" install && \
 
     $PIP_INSTALL \
-        cntk-gpu \
-        && \
+        cntk-gpu
 
 # ==================================================================
 # config & cleanup
 # ------------------------------------------------------------------
 
-    ldconfig && \
+RUN ldconfig && \
     apt-get clean && \
     apt-get autoremove && \
     rm -rf /var/lib/apt/lists/* /tmp/* ~/*
